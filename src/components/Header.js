@@ -6,6 +6,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
+import { Link, useLocation } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -48,7 +49,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-const Header = () => {
+const Header = ({ setSearchValue }) => {
+
+    const location = useLocation();
+    const handleSearchChange = (event) => {
+        const inputValue = event.target.value;
+        setSearchValue(inputValue);
+    }
     return (
         <Box sx={{ flexGrow: 1 }} >
             <AppBar position="static" style={{ backgroundColor: 'ghostwhite', color: 'black' }}>
@@ -56,12 +63,24 @@ const Header = () => {
                     <Typography
                         variant="h6"
                         noWrap
-                        component="div"
-                        sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+                        component={Link}
+                        to="/"
+                        sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, textDecoration: 'none', color: 'black' }}
                     >
                         Blogger
                     </Typography>
-                    <Search style={{ border: '0.1px solid' }}>
+                    {location?.pathname === '/' ? (
+                        <Search style={{ border: '0.1px solid' }}>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                                placeholder="Search…"
+                                inputProps={{ 'aria-label': 'search' }}
+                                onChange={handleSearchChange}
+                            />
+                        </Search>
+                    ) : (<Search style={{ border: '0.1px solid' }}>
                         <SearchIconWrapper>
                             <SearchIcon />
                         </SearchIconWrapper>
@@ -70,7 +89,7 @@ const Header = () => {
                             inputProps={{ 'aria-label': 'search' }}
                             disabled
                         />
-                    </Search>
+                    </Search>)}
                 </Toolbar>
             </AppBar>
         </Box>

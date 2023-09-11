@@ -10,22 +10,26 @@ import {
     CircularProgress,
     Box,
     Avatar,
+    useMediaQuery,
 } from '@mui/material';
 import AuthorPopup from './AuthorDetails';
 import axios from 'axios';
 import '../styles/Card.css';
 
-const Card = () => {
+const Card = ({ searchValue }) => {
 
     const Users_API = 'https://dummyjson.com/users';
 
     const dispatch = useDispatch();
     const posts = useSelector((state) => state?.posts?.posts);
 
+
+
     const [selectedAuthorId, setSelectedAuthorId] = useState(null);
     const [userData, setUserData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage] = useState(6);
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
+    const postsPerPage = isSmallScreen ? 2 : 6;
     const [shuffledImageUrls, setShuffledImageUrls] = useState([]);
     const imageUrls = [
         'https://cdn.pixabay.com/photo/2019/09/17/18/48/computer-4484282_1280.jpg',
@@ -73,9 +77,20 @@ const Card = () => {
         );
     }
 
+    const filteredPosts = posts?.posts?.filter((post) =>
+        post.title.toLowerCase().includes(searchValue.toLowerCase())
+    );
+
+    if (filteredPosts.length === 0) {
+        return (
+            <div className="loader">
+                <h1>No records found!!.</h1>
+            </div>
+        );
+    }
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = posts?.posts?.slice(indexOfFirstPost, indexOfLastPost);
+    const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
 
     const paginate = (pageNumber) => {
         setCurrentPage(pageNumber);
@@ -129,7 +144,7 @@ const Card = () => {
             <div className="pagination-container">
                 <Pagination
                     color="primary"
-                    count={Math.ceil(posts?.posts?.length / postsPerPage)}
+                    count={Math.ceil(filteredPosts?.length / postsPerPage)}
                     shape="rounded"
                     size="large"
                     onChange={(event, pageNumber) => paginate(pageNumber)}

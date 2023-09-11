@@ -51,6 +51,7 @@
 .author-link:hover {
     color: blue;
     font-weight: bold;
+    cursor: pointer;
 }
 
 .action-reaction {
